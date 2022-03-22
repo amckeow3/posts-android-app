@@ -1,5 +1,6 @@
 package com.example.mckeown_hw05;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -175,7 +176,14 @@ public class RegisterFragment extends Fragment {
                         e.printStackTrace();
                     }
                 } else {
+                    ResponseBody responseBody = response.body();
+                    String body = responseBody.string();
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity().getApplicationContext());
+                    alertDialog.setMessage(body)
+                            .setTitle(("Registration Unsuccessful"))
+                            .setCancelable(true);
 
+                    alertDialog.create().show();
                 }
             }
         });

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/textViewPostText"
@@ -33,18 +33,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
         android:text="TextView"
         android:textColor="@color/black"
         android:textSize="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textViewPostCreator"
         app:layout_constraintTop_toBottomOf="@+id/textViewPostCreator" />
 
     <ImageView
         android:id="@+id/imageViewTrashIcon"
         android:layout_width="31dp"
-        android:layout_height="28dp"
+        android:layout_height="0dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textViewTimeStamp"
+        android:layout_marginBottom="14dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textViewTimeStamp"
         app:srcCompat="@drawable/ic_trash" />

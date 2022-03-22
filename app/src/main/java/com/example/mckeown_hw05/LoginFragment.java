@@ -185,14 +185,16 @@ public class LoginFragment extends Fragment {
 
                     } catch (JSONException e){
                         e.printStackTrace();
-
-                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity().getApplicationContext());
-                        alertDialog.setMessage(body)
-                                .setTitle(("Login Unsuccessful"))
-                                .setCancelable(true);
-
-                        alertDialog.create().show();
                     }
+                } else {
+                    ResponseBody responseBody = response.body();
+                    String body = responseBody.string();
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity().getApplicationContext());
+                    alertDialog.setMessage(body)
+                            .setTitle(("Login Unsuccessful"))
+                            .setCancelable(true);
+
+                    alertDialog.create().show();
                 }
             }
         });

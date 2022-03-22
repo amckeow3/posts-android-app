@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,8 +16,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.mckeown_hw05.databinding.FragmentPostsListBinding;
+import com.example.mckeown_hw05.databinding.PostLineItemBinding;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -36,9 +46,16 @@ public class PostsListFragment extends Fragment {
     private static final String ARG_PARAM_NAME = "ARG_PARAM_NAME";
     private static final String ARG_PARAM_ID = "ARG_PARAM_ID";
 
+    ArrayList<Post> postsList = new ArrayList<>();
+    ArrayList<Post> mPosts = new ArrayList<>();
+
     private String mToken;
     private String mName;
     private int mId;
+
+    PostsListAdapter adapter;
+    LinearLayoutManager layoutManager;
+    RecyclerView recyclerView;
 
     public PostsListFragment() {
         // Required empty public constructor
@@ -72,12 +89,11 @@ public class PostsListFragment extends Fragment {
         Log.d(TAG, "---------- id = " + mId);
         Log.d(TAG, "---------- isLoggedIn = " + isLoggedIn);
 
-        getPostsList(mToken);
     }
 
-    void getPostsList(String token) {
+    void getPostsList(String token, int page) {
         Request request = new Request.Builder()
-                .url("https://www.theappsdr.com/posts")
+                .url("https://www.theappsdr.com/posts?page=" + page)
                 .addHeader("Authorization", "BEARER " + token)
                 .build();
 
@@ -90,11 +106,51 @@ public class PostsListFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 Log.d(TAG, "onResponse: " + Thread.currentThread().getId());
-
                 if (response.isSuccessful()) {
                     ResponseBody responseBody = response.body();
                     String body = responseBody.string();
                     Log.d(TAG, "onResponse: " + body);
+
+                    postsList.clear();
+
+                    // Parsing the returned list of posts into an ArrayList containing the parsed Post objects
+                    try {
+                        JSONObject json = new JSONObject(body);
+                        JSONArray postsJson = json.getJSONArray("posts");
+
+                        for (int i=0; i < postsJson.length(); i++) {
+                            JSONObject postJsonObject = postsJson.getJSONObject(i);
+
+                            Post post = new Post();
+
+                            post.setCreator(postJsonObject.getString("created_by_name"));
+                            post.setId(postJsonObject.getString("post_id"));
+                            post.setId(postJsonObject.getString("created_by_uid"));
+                            post.setText(postJsonObject.getString("post_text"));
+                            post.setDateTime(postJsonObject.getString("created_at"));
+
+                            // Parsed post is added to the array list
+                            postsList.add(post);
+                        }
+                        Log.d(TAG, "Posts List: " + postsList);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                recyclerView = binding.postsRecyclerView;
+                                recyclerView.setHasFixedSize(false);
+
+                                layoutManager = new LinearLayoutManager(getContext());
+                                recyclerView.setLayoutManager(layoutManager);
+                                Log.d(TAG, "Adapter list: " + postsList);
+                                adapter = new PostsListAdapter(postsList);
+                                recyclerView.setAdapter(adapter);
+                            }
+                        });
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                 }
             }
         });
@@ -110,8 +166,18 @@ public class PostsListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupUI();
+
+    }
+
+    private void setupUI() {
         getActivity().setTitle("Posts");
 
+        int mPage = 2;
+        getPostsList(mToken, mPage);
+
+        // The greeting TextView shows “Hello XX” where XX is the name of the logged in
+        // user. (This information was captured from the response of either the /posts/login or /posts/signup apis.)
         binding.textViewWelcome.setText("Welcome " + mName);
 
         binding.buttonLogout.setOnClickListener(new View.OnClickListener() {
@@ -130,6 +196,61 @@ public class PostsListFragment extends Fragment {
                 mListener.goToLogin();
             }
         });
+    }
+
+    class PostsListAdapter extends RecyclerView.Adapter<PostsListAdapter.PostsListViewHolder> {
+        ArrayList<Post> mPosts;
+
+        public PostsListAdapter(ArrayList<Post> data){
+            this.mPosts = data;
+        }
+
+        @NonNull
+        @Override
+        public PostsListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            PostLineItemBinding binding = PostLineItemBinding.inflate(getLayoutInflater(), parent, false);
+            return new PostsListViewHolder(binding);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull PostsListViewHolder holder, int position) {
+            Post post = mPosts.get(position);
+            holder.setupUI(post);
+        }
+
+        @Override
+        public int getItemCount() {
+            return this.mPosts.size();
+        }
+
+        class PostsListViewHolder extends RecyclerView.ViewHolder {
+            PostLineItemBinding mBinding;
+            Post mPost;
+
+            public PostsListViewHolder(PostLineItemBinding binding) {
+                super(binding.getRoot());
+                mBinding = binding;
+            }
+
+            public void setupUI(Post post) {
+                mPost = post;
+
+                mBinding.imageViewTrashIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
+
+                mBinding.textViewPostCreator.setText(mPost.creator);
+                mBinding.textViewPostText.setText(mPost.text);
+
+                //SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm a");
+                mBinding.textViewTimeStamp.setText(mPost.dateTime);
+
+
+            }
+        }
     }
 
     @Override
