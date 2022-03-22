@@ -137,30 +137,39 @@ public class RegisterFragment extends Fragment {
                 if (response.isSuccessful()) {
                     ResponseBody responseBody = response.body();
                     String body = responseBody.string();
-                    Log.d(TAG, "Registration Successful " + body);
+                    Log.d(TAG, "Registration Successful! " + body);
 
                     try {
                         JSONObject json = new JSONObject(body);
 
-                        String token = json.getString("token");
-                        Log.d(TAG, "token = " + token);
+                        String mToken = json.getString("token");
+                        Log.d(TAG, "token = " + mToken);
 
-                        String fullName = json.getString("user_fullname");
-                        Log.d(TAG, "full name = " + fullName);
+                        String mName = json.getString("user_fullname");
+                        Log.d(TAG, "full name = " + mName);
                         
-                        int userId = json.getInt("user_id");
-                        Log.d(TAG, "user id = " + userId);
+                        int mId = json.getInt("user_id");
+                        Log.d(TAG, "user id = " + mId);
 
-                        SharedPreferences mPreferences = getContext().getSharedPreferences("AUTH_USER", Context.MODE_PRIVATE);
+                        SharedPreferences mPreferences = getContext().getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = mPreferences.edit();
-                        editor.putString("authToken", token);
+                        editor.putString("authToken", mToken);
+                        editor.putString("authUser", mName);
+                        editor.putInt("userId", mId);
                         editor.putBoolean("isLoggedIn", true);
                         editor.apply();
 
                         String authToken = mPreferences.getString("authToken", "");
+                        String name = mPreferences.getString("authUser", "");
+                        int id = mPreferences.getInt("userId", 0);
                         Boolean loggedIn = mPreferences.getBoolean("isLoggedIn", false);
-                        Log.d(TAG, "Preferences on REGISTER: " + " token = " + authToken + "---------- isLoggedIn =" + loggedIn);
-                        mListener.goToPostsList(token, fullName, userId);
+
+                        Log.d(TAG, "Preferences on REGISTER()");
+                        Log.d(TAG, "---------- token = " + authToken);
+                        Log.d(TAG, "---------- name = " + name);
+                        Log.d(TAG, "---------- id = " + id);
+                        Log.d(TAG, "---------- isLoggedIn = " + loggedIn);
+                        mListener.goToPostsList(mToken, mName, mId);
 
                     } catch (JSONException e) {
                         e.printStackTrace();

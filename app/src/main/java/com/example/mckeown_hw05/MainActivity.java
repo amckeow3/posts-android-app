@@ -1,3 +1,9 @@
+
+
+//  Homework 05
+//  McKeown_HW05
+//  Adrianna McKeown
+
 package com.example.mckeown_hw05;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +19,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private static final String TAG = "Main Activity: ";
     private SharedPreferences mPreferences;
     private String mAuthToken;
+    private String mName;
+    private int mId;
     private Boolean isLoggedIn;
 
     @Override
@@ -20,14 +28,21 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mPreferences = this.getSharedPreferences("AUTH_USER", Context.MODE_PRIVATE);
+        mPreferences = this.getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
         mAuthToken = mPreferences.getString("authToken", "");
+        mName = mPreferences.getString("authUser", "");
+        mId = mPreferences.getInt("userId", 0);
         isLoggedIn = mPreferences.getBoolean("isLoggedIn", false);
-        Log.d(TAG, "On MainActivity Create(): " + " token = " + mAuthToken + "---------- isLoggedIn =" + isLoggedIn);
+
+        Log.d(TAG, "Preferences on MainActivity Create():");
+        Log.d(TAG, "---------- token =" + mAuthToken);
+        Log.d(TAG, "---------- name = " + mName);
+        Log.d(TAG, "---------- id = " + mId);
+        Log.d(TAG, "---------- isLoggedIn = " + isLoggedIn);
 
         if (isLoggedIn != false && mAuthToken != null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.rootView, PostsListFragment.newInstance(mAuthToken))
+                    .add(R.id.rootView, PostsListFragment.newInstance(mAuthToken, mName, mId))
                     .commit();
         } else {
             getSupportFragmentManager().beginTransaction()

@@ -1,5 +1,6 @@
 package com.example.mckeown_hw05;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -110,13 +111,13 @@ public class LoginFragment extends Fragment {
         binding.buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (binding.editTextLoginEmail.getText() == null) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Email is required", Toast.LENGTH_SHORT).show();
-                } else if (binding.editTextLoginPassword.getText() == null) {
+                String email = binding.editTextLoginEmail.getText().toString();
+                String password = binding.editTextLoginPassword.getText().toString();
+                if (email.isEmpty() || email == null){
+                    Toast.makeText(getActivity().getApplicationContext(),"Email is required", Toast.LENGTH_SHORT).show();
+                } else if (password.isEmpty() || password == null) {
                     Toast.makeText(getActivity().getApplicationContext(), "Password is required", Toast.LENGTH_SHORT).show();
                 } else {
-                    String email = binding.editTextLoginEmail.getText().toString();
-                    String password = binding.editTextLoginPassword.getText().toString();
                     login(email, password);
                 }
             }
@@ -152,29 +153,45 @@ public class LoginFragment extends Fragment {
                     try {
                         JSONObject json = new JSONObject(body);
 
-                        String token = json.getString("token");
-                        Log.d(TAG, "token = " + token);
+                        String mToken = json.getString("token");
+                        Log.d(TAG, "token = " + mToken);
 
-                        String fullName = json.getString("user_fullname");
-                        Log.d(TAG, "full name = " + fullName);
+                        String mName = json.getString("user_fullname");
+                        Log.d(TAG, "full name = " + mName);
 
-                        int userId = json.getInt("user_id");
-                        Log.d(TAG, "user id = " + userId);
+                        int mId = json.getInt("user_id");
+                        Log.d(TAG, "user id = " + mId);
 
-                        SharedPreferences mPreferences = getContext().getSharedPreferences("AUTH_USER", Context.MODE_PRIVATE);
+                        SharedPreferences mPreferences = getContext().getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = mPreferences.edit();
-                        editor.putString("authToken", token);
+                        editor.putString("authToken", mToken);
+                        editor.putString("authUser", mName);
+                        editor.putInt("userId", mId);
                         editor.putBoolean("isLoggedIn", true);
                         editor.apply();
 
                         String authToken = mPreferences.getString("authToken", "");
+                        String name = mPreferences.getString("authUser", "");
+                        int id = mPreferences.getInt("userId", 0);
                         Boolean loggedIn = mPreferences.getBoolean("isLoggedIn", false);
-                        Log.d(TAG, "Preferences on LOGIN: " + " token = " + authToken + "---------- isLoggedIn =" + loggedIn);
 
-                        mListener.goToPostsList(token, fullName, userId);
+                        Log.d(TAG, "Preferences on LOGIN():");
+                        Log.d(TAG, "---------- token = " + authToken);
+                        Log.d(TAG, "---------- name = " + name);
+                        Log.d(TAG, "---------- id = " + id);
+                        Log.d(TAG, "---------- isLoggedIn = " + loggedIn);
+
+                        mListener.goToPostsList(mToken, mName, mId);
 
                     } catch (JSONException e){
                         e.printStackTrace();
+
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity().getApplicationContext());
+                        alertDialog.setMessage(body)
+                                .setTitle(("Login Unsuccessful"))
+                                .setCancelable(true);
+
+                        alertDialog.create().show();
                     }
                 }
             }

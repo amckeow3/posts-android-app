@@ -63,9 +63,14 @@ public class PostsListFragment extends Fragment {
             mId = getArguments().getInt(ARG_PARAM_ID);
         }
 
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE);
-        String welcomeText = sharedPreferences.getString("auth-token", "");
-        Log.d(TAG, "onCreate: " + welcomeText);
+        SharedPreferences mPreferences = getContext().getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
+        Boolean isLoggedIn = mPreferences.getBoolean("isLoggedIn", false);
+
+        Log.d(TAG, "Preferences on POSTSLIST Create():");
+        Log.d(TAG, "---------- token = " + mToken);
+        Log.d(TAG, "---------- name = " + mName);
+        Log.d(TAG, "---------- id = " + mId);
+        Log.d(TAG, "---------- isLoggedIn = " + isLoggedIn);
 
         getPostsList(mToken);
     }
@@ -112,15 +117,15 @@ public class PostsListFragment extends Fragment {
         binding.buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences mPreferences = getContext().getSharedPreferences("AUTH_USER", Context.MODE_PRIVATE);
+                // Clicking the "Logout" button clears all the stored token and name information stored in the shared preference,
+                // sets the id to 0 and sets isLoggedIn to false
+                SharedPreferences mPreferences = getContext().getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = mPreferences.edit();
                 editor.remove("authToken");
+                editor.remove("authUser");
+                editor.putInt("userId", 0);
                 editor.putBoolean("isLoggedIn", false);
                 editor.apply();
-
-                String authToken = mPreferences.getString("authToken", "");
-                Boolean loggedIn = mPreferences.getBoolean("isLoggedIn", false);
-                Log.d(TAG, "Preferences on POSTS LISTS: " + " token = " + authToken + "---------- isLoggedIn =" + loggedIn);
 
                 mListener.goToLogin();
             }
