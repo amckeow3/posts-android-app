@@ -1,6 +1,7 @@
 package com.example.mckeown_hw05;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,9 +12,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.mckeown_hw05.databinding.FragmentRegisterBinding;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -76,6 +81,8 @@ public class RegisterFragment extends Fragment {
 
         getActivity().setTitle("Create New Account");
 
+
+
         binding.textViewCancelRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,21 +90,19 @@ public class RegisterFragment extends Fragment {
             }
         });
 
-        //Thread thread = new Thread(new DoWork());
-        
         binding.buttonSubmitRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (binding.editTextFullName.getText() == null) {
+                String name = binding.editTextFullName.getText().toString();
+                String email = binding.editTextRegistrationEmail.getText().toString();
+                String password = binding.editTextRegistrationPassword.getText().toString();
+                if (name.isEmpty() || name == null) {
                     Toast.makeText(getActivity().getApplicationContext(), "Name is required", Toast.LENGTH_SHORT).show();
-                } else if (binding.editTextRegistrationEmail.getText() == null){
+                } else if (email.isEmpty() || email == null){
                     Toast.makeText(getActivity().getApplicationContext(),"Email is required", Toast.LENGTH_SHORT).show();
-                } else if (binding.editTextRegistrationPassword.getText() == null) {
+                } else if (password.isEmpty() || password == null) {
                     Toast.makeText(getActivity().getApplicationContext(), "Password is required", Toast.LENGTH_SHORT).show();
                 } else {
-                    String name = binding.editTextFullName.getText().toString();
-                    String email = binding.editTextRegistrationEmail.getText().toString();
-                    String password = binding.editTextRegistrationPassword.getText().toString();
                     createAccount(email, password, name);
                 }
             }
@@ -132,7 +137,36 @@ public class RegisterFragment extends Fragment {
                 if (response.isSuccessful()) {
                     ResponseBody responseBody = response.body();
                     String body = responseBody.string();
-                    Log.d(TAG, "onResponse: " + body);
+                    Log.d(TAG, "Registration Successful " + body);
+
+                    try {
+                        JSONObject json = new JSONObject(body);
+
+                        String token = json.getString("token");
+                        Log.d(TAG, "token = " + token);
+
+                        String fullName = json.getString("user_fullname");
+                        Log.d(TAG, "full name = " + fullName);
+                        
+                        int userId = json.getInt("user_id");
+                        Log.d(TAG, "user id = " + userId);
+
+                        SharedPreferences mPreferences = getContext().getSharedPreferences("AUTH_USER", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = mPreferences.edit();
+                        editor.putString("authToken", token);
+                        editor.putBoolean("isLoggedIn", true);
+                        editor.apply();
+
+                        String authToken = mPreferences.getString("authToken", "");
+                        Boolean loggedIn = mPreferences.getBoolean("isLoggedIn", false);
+                        Log.d(TAG, "Preferences on REGISTER: " + " token = " + authToken + "---------- isLoggedIn =" + loggedIn);
+                        mListener.goToPostsList(token, fullName, userId);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+
                 }
             }
         });
@@ -146,5 +180,6 @@ public class RegisterFragment extends Fragment {
 
     interface RegisterFragmentListener {
         void goToLogin();
+        void goToPostsList(String token, String fullName, int userId);
     }
 }
