@@ -28,11 +28,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     final ArrayList<Post> posts = new ArrayList<>();    //Array list for Expenses
     Post post;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // When the Main Activity starts, it check the shared preferences for the presence of the token and user information.
         mPreferences = this.getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
         mAuthToken = mPreferences.getString("authToken", "");
         mName = mPreferences.getString("authUser", "");
@@ -45,11 +47,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         Log.d(TAG, "---------- id = " + mId);
         Log.d(TAG, "---------- isLoggedIn = " + isLoggedIn);
 
+        // If the token and user information are present and isLoggedIn is true, the the user is authenticated and the app displays the Posts List Fragment.
         if (isLoggedIn != false && mAuthToken != null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.rootView, PostsListFragment.newInstance(mAuthToken, mName, mId), "posts-list-fragment")
                     .commit();
-        } else {
+        }
+        // If the token and user information are not present in the shared preferences then the Login Fragment is displayed.
+        else {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.rootView, new LoginFragment(), "login-fragment")
                     .commit();
@@ -90,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     @Override
     public void cancelAccountRegistration() {
-
+        getSupportFragmentManager().popBackStack();
     }
 
     @Override

@@ -222,8 +222,8 @@ public class PostsListFragment extends Fragment {
         binding.buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Clicking the "Logout" button clears all the stored token and name information stored in the shared preference,
-                // sets the id to 0 and sets isLoggedIn to false
+                // Upon user clicking the "Logout" button, the token and user information are deleted from the shared preferences,
+                // and isLoggedIn is set to false.
                 SharedPreferences mPreferences = getContext().getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = mPreferences.edit();
                 editor.remove("authToken");

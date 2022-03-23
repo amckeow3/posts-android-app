@@ -108,22 +108,24 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        // Clicking the "Login" button attempts to login the user by using the /posts/login API.
         binding.buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String email = binding.editTextLoginEmail.getText().toString();
                 String password = binding.editTextLoginPassword.getText().toString();
-                if (email.isEmpty() || email == null){
+                if (email.isEmpty() || email == null){ // Checks if the email field is empty
                     Toast.makeText(getActivity().getApplicationContext(),"Email is required", Toast.LENGTH_SHORT).show();
-                } else if (password.isEmpty() || password == null) {
+                } else if (password.isEmpty() || password == null) { // Checks if the password field is empty
                     Toast.makeText(getActivity().getApplicationContext(), "Password is required", Toast.LENGTH_SHORT).show();
-                } else {
+                } else { // if all the inputs are not empty, the login background thread is called
                     login(email, password);
                 }
             }
         });
     }
 
+    // Uses the OkHttp library to make an http connection and API call to the /posts/login API
     void login(String email, String password) {
         FormBody formBody = new FormBody.Builder()
                 .add("email", email)
@@ -145,12 +147,15 @@ public class LoginFragment extends Fragment {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 Log.d(TAG, "onResponse: " + Thread.currentThread().getId());
 
+                // Login is successful
                 if (response.isSuccessful()) {
                     ResponseBody responseBody = response.body();
                     String body = responseBody.string();
                     Log.d(TAG, "onResponse: " + body);
 
+                    // parses the authentication token and user information returned
                     try {
+                        // All the data returned by the API call is in JSON format.
                         JSONObject json = new JSONObject(body);
 
                         String mToken = json.getString("token");
@@ -162,6 +167,7 @@ public class LoginFragment extends Fragment {
                         int mId = json.getInt("user_id");
                         Log.d(TAG, "user id = " + mId);
 
+                        // Communicates the returned and parsed authentication token and user information to the shared preferences
                         SharedPreferences mPreferences = getContext().getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = mPreferences.edit();
                         editor.putString("authToken", mToken);
@@ -181,12 +187,14 @@ public class LoginFragment extends Fragment {
                         Log.d(TAG, "---------- id = " + id);
                         Log.d(TAG, "---------- isLoggedIn = " + loggedIn);
 
+                        // Login Fragment is replaced with the Posts List Fragment
                         mListener.goToPostsList(mToken, mName, mId);
 
                     } catch (JSONException e){
                         e.printStackTrace();
                     }
-                } else {
+                } else { // Login is unsuccessful
+                    // An alert dialog is shown with the error message returned by the api
                     ResponseBody responseBody = response.body();
                     String body = responseBody.string();
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity().getApplicationContext());
