@@ -87,7 +87,7 @@ public class RegisterFragment extends Fragment {
         binding.textViewCancelRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.goToLogin();
+                mListener.cancelAccountRegistration();
             }
         });
 
@@ -196,7 +196,7 @@ public class RegisterFragment extends Fragment {
     }
 
     interface RegisterFragmentListener {
-        void goToLogin();
+        void cancelAccountRegistration();
         void goToPostsList(String token, String fullName, int userId);
     }
 }

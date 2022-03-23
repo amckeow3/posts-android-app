@@ -13,6 +13,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragmentListener, RegisterFragment.RegisterFragmentListener,
         CreatePostFragment.CreatePostFragmentListener, PostsListFragment.PostsListFragmentListener {
 
@@ -22,6 +24,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private String mName;
     private int mId;
     private Boolean isLoggedIn;
+
+    final ArrayList<Post> posts = new ArrayList<>();    //Array list for Expenses
+    Post post;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +47,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         if (isLoggedIn != false && mAuthToken != null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.rootView, PostsListFragment.newInstance(mAuthToken, mName, mId))
+                    .add(R.id.rootView, PostsListFragment.newInstance(mAuthToken, mName, mId), "posts-list-fragment")
                     .commit();
         } else {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.rootView, new LoginFragment())
+                    .add(R.id.rootView, new LoginFragment(), "login-fragment")
                     .commit();
         }
     }
@@ -54,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public void goToRegistration() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.rootView, new RegisterFragment())
+                .replace(R.id.rootView, new RegisterFragment(), "register-fragment")
                 .addToBackStack(null)
                 .commit();
     }
@@ -62,16 +67,47 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public void goToLogin() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.rootView, new LoginFragment())
+                .replace(R.id.rootView, new LoginFragment(), "login-fragment")
                 .addToBackStack(null)
                 .commit();
     }
 
     @Override
+    public void goToCreatePost(String token, String fullName, int userId) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.rootView, new CreatePostFragment(), "create-post-fragment")
+                    .addToBackStack(null)
+                    .commit();
+            CreatePostFragment.getUserDetails(token, fullName, userId);
+
+    }
+
+    @Override
+    public ArrayList<Post> deleteAndRefresh(Post post) {
+        posts.remove(post);
+        return posts;
+    }
+
+    @Override
+    public void cancelAccountRegistration() {
+
+    }
+
+    @Override
     public void goToPostsList(String token, String fullName, int userId) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.rootView, PostsListFragment.newInstance(token, fullName, userId))
+                .replace(R.id.rootView, PostsListFragment.newInstance(token, fullName, userId), "posts-list-fragment")
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void submitNewPost() {
+        getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
+    public void cancelNewPost() {
+        getSupportFragmentManager().popBackStack();
     }
 }

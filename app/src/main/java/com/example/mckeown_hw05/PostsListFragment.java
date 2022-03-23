@@ -57,6 +57,8 @@ public class PostsListFragment extends Fragment {
     LinearLayoutManager layoutManager;
     RecyclerView recyclerView;
 
+    int page;
+
     public PostsListFragment() {
         // Required empty public constructor
     }
@@ -89,6 +91,7 @@ public class PostsListFragment extends Fragment {
         Log.d(TAG, "---------- id = " + mId);
         Log.d(TAG, "---------- isLoggedIn = " + isLoggedIn);
 
+        getPostsList(mToken, 1);
     }
 
     void getPostsList(String token, int page) {
@@ -156,6 +159,42 @@ public class PostsListFragment extends Fragment {
         });
     }
 
+    void deletePost(String token, int post_id) {
+        FormBody formBody = new FormBody.Builder()
+                .add("post_id", String.valueOf(post_id))
+                .build();
+
+        Request request = new Request.Builder()
+                .url("https://www.theappsdr.com/posts/delete")
+                .post(formBody)
+                .addHeader("Authorization", "BEARER " + token)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                Log.d(TAG, "onDeleteResponse: " + Thread.currentThread().getId());
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "Post Successfully Deleted!");
+                    ResponseBody responseBody = response.body();
+                    String body = responseBody.string();
+                    Log.d(TAG, "DeletePost() onResponse: " + body);
+                    getPostsList(mToken, page);
+                } else {
+                    ResponseBody responseBody = response.body();
+                    String body = responseBody.string();
+                    Log.d(TAG, "Post deletion was unsuccessful:" + body + " for post_id {" + post_id + "}");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+            }
+        });
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -173,8 +212,8 @@ public class PostsListFragment extends Fragment {
     private void setupUI() {
         getActivity().setTitle("Posts");
 
-        int mPage = 2;
-        getPostsList(mToken, mPage);
+        page = 1;
+        getPostsList(mToken, page);
 
         // The greeting TextView shows “Hello XX” where XX is the name of the logged in
         // user. (This information was captured from the response of either the /posts/login or /posts/signup apis.)
@@ -193,7 +232,21 @@ public class PostsListFragment extends Fragment {
                 editor.putBoolean("isLoggedIn", false);
                 editor.apply();
 
+                Log.d(TAG, "on Logout(): ");
+                Log.d(TAG, "isLoggedIn = " + mPreferences.getBoolean("isLoggedIn", false));
                 mListener.goToLogin();
+            }
+        });
+
+        binding.buttonCreatePost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences mPreferences = getContext().getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
+                String authToken = mPreferences.getString("authToken", "");
+                String fullName = mPreferences.getString("authUser", "");
+                int userId = mPreferences.getInt("userId", 0);
+
+                mListener.goToCreatePost(authToken, fullName, userId);
             }
         });
     }
@@ -238,14 +291,14 @@ public class PostsListFragment extends Fragment {
                 mBinding.imageViewTrashIcon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        deletePost(mToken, Integer.parseInt(mPost.id));
+                        adapter.notifyDataSetChanged();
 
                     }
                 });
 
                 mBinding.textViewPostCreator.setText(mPost.creator);
                 mBinding.textViewPostText.setText(mPost.text);
-
-                //SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm a");
                 mBinding.textViewTimeStamp.setText(mPost.dateTime);
 
 
@@ -261,5 +314,7 @@ public class PostsListFragment extends Fragment {
 
     interface PostsListFragmentListener {
         void goToLogin();
+        void goToCreatePost(String token, String fullName, int userId);
+        ArrayList<Post> deleteAndRefresh(Post post);
     }
 }
