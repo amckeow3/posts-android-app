@@ -1,5 +1,6 @@
 package com.example.mckeown_hw05;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Post {
@@ -8,6 +9,16 @@ public class Post {
     String dateTime;
     String creator;
     String name;
+
+    public ArrayList<Post> getPostsList() {
+        return postsList;
+    }
+
+    public void setPostsList(ArrayList<Post> postsList) {
+        this.postsList = postsList;
+    }
+
+    ArrayList <Post> postsList = new ArrayList<>();
 
     public String getId() {
         return id;

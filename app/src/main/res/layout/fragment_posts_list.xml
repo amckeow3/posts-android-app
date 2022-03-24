@@ -51,33 +51,31 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/postsRecyclerView"
-        android:layout_width="0dp"
-        android:layout_height="533dp"
+        android:layout_width="361dp"
+        android:layout_height="0dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@id/textViewPagerSummary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewWelcome" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pagerRecyclerView"
-        android:layout_width="0dp"
+        android:layout_width="363dp"
         android:layout_height="36dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewPagerSummary" />
+        app:layout_constraintEnd_toEndOf="@+id/postsRecyclerView"
+        app:layout_constraintStart_toStartOf="@+id/postsRecyclerView" />
 
     <TextView
         android:id="@+id/textViewPagerSummary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/postsRecyclerView"
-        app:layout_constraintTop_toBottomOf="@+id/postsRecyclerView" />
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/pagerRecyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/postsRecyclerView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,7 +14,6 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:hint="@string/enter_post"
-        android:hintTextColor="#78909C"
         android:textSize="20sp"
         android:inputType="text"
         android:maxLength="140"
@@ -22,8 +21,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="TextContrastCheck"
-        android:importantForAutofill="no" />
+        tools:ignore="TextContrastCheck" />
 
     <Button
         android:id="@+id/buttonSubmitPost"

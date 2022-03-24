@@ -115,13 +115,13 @@ public class CreatePostFragment extends Fragment {
                  if (response.isSuccessful()) {
                      Log.d(TAG, "New Post Successfully Created!");
                  } else {
-                     Log.d(TAG, "New Post Successfully Created!");
+                     Log.d(TAG, "Unable to create new post");
                  }
              }
 
              @Override
              public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
+                e.printStackTrace();
              }
 
          });

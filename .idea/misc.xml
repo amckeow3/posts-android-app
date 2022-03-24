@@ -8,8 +8,10 @@
         <entry key="..\:/Users/adria/AndroidStudioProjects/McKeown_HW05/app/src/main/res/layout/fragment_login.xml" value="0.2" />
         <entry key="..\:/Users/adria/AndroidStudioProjects/McKeown_HW05/app/src/main/res/layout/fragment_posts_list.xml" value="0.2" />
         <entry key="..\:/Users/adria/AndroidStudioProjects/McKeown_HW05/app/src/main/res/layout/fragment_register.xml" value="0.2" />
+        <entry key="..\:/Users/adria/AndroidStudioProjects/McKeown_HW05/app/src/main/res/layout/horizontal_pager_item.xml" value="0.176" />
+        <entry key="..\:/Users/adria/AndroidStudioProjects/McKeown_HW05/app/src/main/res/layout/pager_card_view.xml" value="0.264" />
         <entry key="..\:/Users/adria/AndroidStudioProjects/McKeown_HW05/app/src/main/res/layout/pager_count_item.xml" value="0.2" />
-        <entry key="..\:/Users/adria/AndroidStudioProjects/McKeown_HW05/app/src/main/res/layout/post_line_item.xml" value="0.264" />
+        <entry key="..\:/Users/adria/AndroidStudioProjects/McKeown_HW05/app/src/main/res/layout/post_line_item.xml" value="0.536" />
       </map>
     </option>
   </component>
