@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Post {
-    String id;
+    String postId;
     String text;
     String dateTime;
-    String creator;
+    String creatorId;
     String name;
 
     public ArrayList<Post> getPostsList() {
@@ -20,12 +20,12 @@ public class Post {
 
     ArrayList <Post> postsList = new ArrayList<>();
 
-    public String getId() {
-        return id;
+    public String getPostId() {
+        return postId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public String getText() {
@@ -44,12 +44,12 @@ public class Post {
         this.dateTime = dateTime;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getCreatorId() {
+        return creatorId;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 
     public String getName() {

@@ -2,6 +2,7 @@ package com.example.mckeown_hw05;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -167,12 +168,16 @@ public class RegisterFragment extends Fragment {
                 } else {
                     ResponseBody responseBody = response.body();
                     String body = responseBody.string();
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity().getApplicationContext());
-                    alertDialog.setMessage(body)
-                            .setTitle(("Registration Unsuccessful"))
-                            .setCancelable(true);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Registration Error")
+                            .setMessage(body)
+                            .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                    alertDialog.create().show();
+                                }
+                            });
+                    builder.create().show();
                 }
             }
         });

@@ -138,9 +138,9 @@ public class PostsListFragment extends Fragment {
 
                             // The returned list of posts is parsed into an ArrayList
                             // containing the parsed Post objects.
-                            post.setCreator(postJsonObject.getString("created_by_name"));
-                            post.setId(postJsonObject.getString("post_id"));
-                            post.setId(postJsonObject.getString("created_by_uid"));
+                            post.setName(postJsonObject.getString("created_by_name"));
+                            post.setPostId(postJsonObject.getString("post_id"));
+                            post.setCreatorId(postJsonObject.getString("created_by_uid"));
                             post.setText(postJsonObject.getString("post_text"));
                             post.setDateTime(postJsonObject.getString("created_at"));
 
@@ -195,7 +195,6 @@ public class PostsListFragment extends Fragment {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-
                 if (response.isSuccessful()) {
                     Log.d(TAG, "Post Successfully Deleted!");
                     ResponseBody responseBody = response.body();
@@ -314,20 +313,35 @@ public class PostsListFragment extends Fragment {
             public void setupUI(Post post) {
                 mPost = post;
 
-                mBinding.textViewPostCreator.setText(mPost.creator);
+                mBinding.textViewPostCreator.setText(mPost.name);
                 mBinding.textViewPostText.setText(mPost.text);
                 mBinding.textViewTimeStamp.setText(mPost.dateTime);
 
                 SharedPreferences mPreferences = getContext().getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
                 int user_id = mPreferences.getInt("userId", 0);
 
-                if (user_id == Integer.valueOf(mPost.id)) {
+                if (user_id == Integer.valueOf(mPost.creatorId)) {
                     mBinding.imageViewTrashIcon.setImageResource(R.drawable.ic_trash);
                     mBinding.imageViewTrashIcon.setVisibility(View.VISIBLE);
                     mBinding.imageViewTrashIcon.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            deletePost(mToken, mPost.id);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                            builder.setTitle("Delete Post")
+                                    .setMessage("Delete selected post?")
+                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            deletePost(mToken, mPost.postId);
+                                        }
+                                    })
+                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            Log.d(TAG, "onClick: Cancel clicked");
+                                        }
+                                    });
+                            builder.create().show();
                         }
                     });
                 } else {
