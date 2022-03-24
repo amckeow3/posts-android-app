@@ -201,7 +201,6 @@ public class LoginFragment extends Fragment {
                     alertDialog.setMessage(body)
                             .setTitle(("Login Unsuccessful"))
                             .setCancelable(true);
-
                     alertDialog.create().show();
                 }
             }

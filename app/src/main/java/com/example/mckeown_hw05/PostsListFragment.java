@@ -27,7 +27,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -57,6 +60,7 @@ public class PostsListFragment extends Fragment {
     int postsCount;
     int pageCount;
     int selectedPage = 1;
+    Date postDate;
 
     private PostsListAdapter postsAdapter;
     private PagerAdapter pagerAdapter;
@@ -315,7 +319,18 @@ public class PostsListFragment extends Fragment {
 
                 mBinding.textViewPostCreator.setText(mPost.name);
                 mBinding.textViewPostText.setText(mPost.text);
-                mBinding.textViewTimeStamp.setText(mPost.dateTime);
+
+                Date formatString;
+                try {
+                    postDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(mPost.dateTime);
+                    SimpleDateFormat sdf = new SimpleDateFormat ("MM/dd/yyyy 'at' hh:mm a");
+                    String formattedDate = sdf.format(postDate);
+                    //String formattedDateString = postDate.toString();
+                    mBinding.textViewTimeStamp.setText(formattedDate);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
 
                 SharedPreferences mPreferences = getContext().getSharedPreferences("USER_AUTH", Context.MODE_PRIVATE);
                 int user_id = mPreferences.getInt("userId", 0);
