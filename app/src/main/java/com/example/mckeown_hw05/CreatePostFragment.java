@@ -91,7 +91,6 @@ public class CreatePostFragment extends Fragment {
                     Toast.makeText(getActivity().getApplicationContext(), "Post text cannot be blank", Toast.LENGTH_SHORT).show();
                 } else {
                     createPost(mToken, postText);
-                    mListener.submitNewPost();
                 }
             }
         });
@@ -114,6 +113,7 @@ public class CreatePostFragment extends Fragment {
                  Log.d(TAG, "onCreatePostResponse: " + Thread.currentThread().getId());
                  if (response.isSuccessful()) {
                      Log.d(TAG, "New Post Successfully Created!");
+                     mListener.submitNewPost();
                  } else {
                      Log.d(TAG, "Unable to create new post");
                  }

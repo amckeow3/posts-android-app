@@ -91,8 +91,6 @@ public class PostsListFragment extends Fragment {
             mName = getArguments().getString(ARG_PARAM_NAME);
             mId = getArguments().getInt(ARG_PARAM_ID);
         }
-        Log.d(TAG, "Posts List onCreate Called");
-        getPostsList(mToken, selectedPage);
     }
 
     // Uses the OkHttp library to make an http connection and API call to the /posts API. The /posts api returns a single page
@@ -223,21 +221,19 @@ public class PostsListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentPostsListBinding.inflate(inflater, container, false);
-        return binding.getRoot();
 
+        setupUI();
+
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupUI();
-        getPostsList(mToken, selectedPage);
-        Log.d(TAG, "PostsList Fragment onViewCreated Called");
+        getActivity().setTitle("Posts");
     }
 
     private void setupUI() {
-        getActivity().setTitle("Posts");
-
         getPostsList(mToken, selectedPage);
 
         // The greeting TextView shows “Hello XX” where XX is the name of the logged in
